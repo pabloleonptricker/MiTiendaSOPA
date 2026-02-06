@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TiendaSOAP - Panel de Pruebas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .main-content {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            min-height: 500px;
+        }
+
+        .nav-btn {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: transparent;
+            border: 1px solid transparent;
+            color: #94a3b8;
+            text-align: left;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 400;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button.submit-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .response-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #000;
+            border-radius: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            color: #4ade80;
+            overflow-x: auto;
+            max-height: 300px;
+            border: 1px solid #1e293b;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>TiendaSOAP Explorer</h1>
+        <p>Prueba los métodos del servicio Web en tiempo real</p>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <button class="nav-btn active" onclick="showSection('usuarios')">Usuarios</button>
+            <button class="nav-btn" onclick="showSection('productos')">Productos</button>
+            <button class="nav-btn" onclick="showSection('pedidos')">Pedidos</button>
+            <button class="nav-btn" onclick="showSection('logs')">Auditoría & Logs</button>
+        </aside>
+
+        <main class="main-content">
+            <!-- SECCIÓN USUARIOS -->
+            <div id="usuarios" class="section active">
+                <h2>Gestión de Usuarios</h2>
+                <div style="margin-top: 1.5rem;">
+                    <div class="form-group">
+                        <label>Nombre de Usuario</label>
+                        <input type="text" id="user_name" placeholder="ej. juanito88">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="user_pass" placeholder="••••••••">
+                    </div>
+                    <div class="btn-grid">
+                        <button class="submit-btn" onclick="callService('ValidarUsuario', {nombreUsuario: 'user_name', contraseña: 'user_pass'})">Validar</button>
+                        <button class="submit-btn" onclick="registerUser()">Registrar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN PRODUCTOS -->
+            <div id="productos" class="section">
+                <h2>Gestión de Productos</h2>
+                <div style="margin-top: 1.5rem;">
+                    <div class="form-group">
+                        <label>Nombre Producto</label>
+                        <input type="text" id="prod_name" placeholder="Teclado Mecánico">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio</label>
+                        <input type="number" id="prod_price" placeholder="49.99">
+                    </div>
+                    <div class="form-group">
+                        <label>Stock</label>
+                        <input type="number" id="prod_stock" placeholder="10">
+                    </div>
+                    <button class="submit-btn" onclick="callService('CrearProducto', {nombre: 'prod_name', descripcion: '', precio: 'prod_price', stock: 'prod_stock', categoriaID: 1})">Añadir Producto</button>
+                    <button class="submit-btn" style="margin-top: 0.5rem; background: #334155;" onclick="callService('ObtenerProductos', {})">Listar Todo</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN PEDIDOS -->
+            <div id="pedidos" class="section">
+                <h2>Realizar Pedido</h2>
+                <div style="margin-top: 1.5rem;">
+                    <div class="form-group">
+                        <label>ID Usuario</label>
+                        <input type="number" id="order_uid" placeholder="1">
+                    </div>
+                    <div class="form-group">
+                        <label>ID Producto</label>
+                        <input type="number" id="order_pid" placeholder="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad</label>
+                        <input type="number" id="order_qty" placeholder="1">
+                    </div>
+                    <button class="submit-btn" onclick="createOrder()">Enviar Pedido</button>
+                    <button class="submit-btn" style="margin-top: 0.5rem; background: #334155;" onclick="callService('ObtenerPedidosPorUsuario', {usuarioID: 'order_uid'})">Mis Pedidos</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN LOGS -->
+            <div id="logs" class="section">
+                <h2>Historial y Logs</h2>
+                <p style="color: #94a3b8; margin-bottom: 1rem;">Consulta el historial de compras detallado.</p>
+                <div class="form-group">
+                    <label>ID Usuario</label>
+                    <input type="number" id="hist_uid" placeholder="1">
+                </div>
+                <button class="submit-btn" onclick="callService('HistorialCompras', {usuarioID: 'hist_uid'})">Ver Historial</button>
+            </div>
+
+            <div class="response-box" id="response">
+                // Los resultados aparecerán aquí...
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const SERVICE_URL = './TiendaService.asmx';
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function callService(method, params) {
+            const responseBox = document.getElementById('response');
+            responseBox.innerText = `Llamando a ${method}...`;
+
+            // Construir parámetros
+            let paramsXml = '';
+            for (const [key, value] of Object.entries(params)) {
+                const elementValue = document.getElementById(value) ? document.getElementById(value).value : value;
+                paramsXml += `<${key}>${elementValue}</${key}>`;
+            }
+
+            const soapEnvelope = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <${method} xmlns="http://tempuri.org/">
+      ${paramsXml}
+    </${method}>
+  </soap:Body>
+</soap:Envelope>`;
+
+            try {
+                const response = await fetch(SERVICE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/xml; charset=utf-8',
+                        'SOAPAction': `"http://tempuri.org/${method}"`
+                    },
+                    body: soapEnvelope
+                });
+
+                const text = await response.text();
+                // Parse simple para mostrar el resultado
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                const result = xmlDoc.getElementsByTagName(method + "Result")[0]?.textContent || text;
+                
+                responseBox.innerText = `[${new Date().toLocaleTimeString()}] ${method} Respuesta:\n\n${result}`;
+            } catch (err) {
+                responseBox.innerText = `Error: ${err.message}. Asegúrate de que el servicio está corriendo en localhost.`;
+            }
+        }
+
+        function registerUser() {
+            const params = {
+                nombreUsuario: 'user_name',
+                contraseña: 'user_pass',
+                nombre: 'Invitado',
+                apellido: 'Prueba',
+                email: 'test@example.com'
+            };
+            callService('RegistrarUsuario', params);
+        }
+
+        async function createOrder() {
+            const uid = document.getElementById('order_uid').value;
+            const pid = document.getElementById('order_pid').value;
+            const qty = document.getElementById('order_qty').value;
+
+            // Nota: Este método recibe listas en C#, el XML debe reflejar la estructura de colecciones
+            const soapEnvelope = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <CrearPedido xmlns="http://tempuri.org/">
+      <usuarioID>${uid}</usuarioID>
+      <productosIDs>
+        <int>${pid}</int>
+      </productosIDs>
+      <cantidades>
+        <int>${qty}</int>
+      </cantidades>
+    </CrearPedido>
+  </soap:Body>
+</soap:Envelope>`;
+
+            const responseBox = document.getElementById('response');
+            responseBox.innerText = "Procesando pedido transaccional...";
+
+            try {
+                const response = await fetch(SERVICE_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/xml; charset=utf-8',
+                        'SOAPAction': '"http://tempuri.org/CrearPedido"'
+                    },
+                    body: soapEnvelope
+                });
+                const text = await response.text();
+                responseBox.innerText = text;
+            } catch (err) {
+                responseBox.innerText = "Error: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -116,42 +116,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
-    <Content Include="WsCategorias.asmx" />
-    <Content Include="WsConexionBaseDatos.asmx" />
-    <Content Include="WsDetallesPedidos.asmx" />
-    <Content Include="WsPedidos.asmx" />
-    <Content Include="WsProductos.asmx" />
-    <Content Include="WsUsuarios.asmx" />
     <Content Include="TiendaService.asmx" />
     <Content Include="index.html" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="conexion\Conexion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WsCategorias.asmx.cs">
-      <DependentUpon>WsCategorias.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WsConexionBaseDatos.asmx.cs">
-      <DependentUpon>WsConexionBaseDatos.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WsDetallesPedidos.asmx.cs">
-      <DependentUpon>WsDetallesPedidos.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WsPedidos.asmx.cs">
-      <DependentUpon>WsPedidos.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WsProductos.asmx.cs">
-      <DependentUpon>WsProductos.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WsUsuarios.asmx.cs">
-      <DependentUpon>WsUsuarios.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="TiendaService.asmx.cs">
       <DependentUpon>TiendaService.asmx</DependentUpon>
       <SubType>Component</SubType>

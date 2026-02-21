@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Linq;
-using System.Web;
 using System.Web.Services;
 using MySql.Data.MySqlClient;
 
@@ -14,11 +12,12 @@ namespace MiTiendaSOAP
     [System.ComponentModel.ToolboxItem(false)]
     public class TiendaService : System.Web.Services.WebService
     {
+        // La cadena de conexión se obtiene del Web.config
         private string connString = ConfigurationManager.ConnectionStrings["TiendaDB"].ConnectionString;
 
         #region Usuarios
 
-        [WebMethod]
+        [WebMethod(Description = "Valida las credenciales de un usuario.")]
         public string ValidarUsuario(string nombreUsuario, string contraseña)
         {
             using (MySqlConnection conn = new MySqlConnection(connString))
@@ -49,7 +48,7 @@ namespace MiTiendaSOAP
             }
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Registra un nuevo usuario en el sistema.")]
         public string RegistrarUsuario(string nombreUsuario, string contraseña, string nombre, string apellido, string email)
         {
             using (MySqlConnection conn = new MySqlConnection(connString))
@@ -57,7 +56,6 @@ namespace MiTiendaSOAP
                 try
                 {
                     conn.Open();
-                    // Verificar duplicados
                     string checkQuery = "SELECT COUNT(*) FROM Usuarios WHERE NombreUsuario = @user OR Email = @email";
                     using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
                     {
@@ -87,7 +85,7 @@ namespace MiTiendaSOAP
             }
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Actualiza los datos de un usuario existente.")]
         public string ActualizarUsuario(int usuarioID, string nombre, string apellido, string email)
         {
             using (MySqlConnection conn = new MySqlConnection(connString))
@@ -114,7 +112,7 @@ namespace MiTiendaSOAP
             }
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Elimina un usuario del sistema.")]
         public string EliminarUsuario(int usuarioID)
         {
             using (MySqlConnection conn = new MySqlConnection(connString))
@@ -138,7 +136,7 @@ namespace MiTiendaSOAP
             }
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Obtiene la lista de todos los usuarios.")]
         public List<string> ObtenerUsuarios()
         {
             List<string> usuarios = new List<string>();
@@ -171,7 +169,7 @@ namespace MiTiendaSOAP
 
         #region Productos
 
-        [WebMethod]
+        [WebMethod(Description = "Crea un nuevo producto en el catálogo.")]
         public string CrearProducto(string nombre, string descripcion, decimal precio, int stock, int categoriaID)
         {
             using (MySqlConnection conn = new MySqlConnection(connString))
@@ -199,7 +197,7 @@ namespace MiTiendaSOAP
             }
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Actualiza la información de un producto.")]
         public string ActualizarProducto(int productoID, string nombre, string descripcion, decimal precio, int stock)
         {
             using (MySqlConnection conn = new MySqlConnection(connString))
@@ -227,7 +225,7 @@ namespace MiTiendaSOAP
             }
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Elimina un producto del catálogo.")]
         public string EliminarProducto(int productoID)
         {
             using (MySqlConnection conn = new MySqlConnection(connString))
@@ -251,7 +249,7 @@ namespace MiTiendaSOAP
             }
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Obtiene todos los productos disponibles.")]
         public List<string> ObtenerProductos()
         {
             List<string> productos = new List<string>();
@@ -280,7 +278,7 @@ namespace MiTiendaSOAP
             return productos;
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Busca productos por coincidencia de nombre.")]
         public List<string> BuscarProductos(string termino)
         {
             List<string> productos = new List<string>();
@@ -314,7 +312,7 @@ namespace MiTiendaSOAP
 
         #region Pedidos
 
-        [WebMethod]
+        [WebMethod(Description = "Crea un pedido con transacciones y actualiza el stock automáticamente.")]
         public string CrearPedido(int usuarioID, List<int> productosIDs, List<int> cantidades)
         {
             if (productosIDs.Count != cantidades.Count) return "Error: Datos de pedido inconsistentes.";
@@ -322,6 +320,7 @@ namespace MiTiendaSOAP
             using (MySqlConnection conn = new MySqlConnection(connString))
             {
                 conn.Open();
+                // Usamos transacción para asegurar que todo se guarda o nada se guarda
                 MySqlTransaction trans = conn.BeginTransaction();
                 try
                 {
@@ -363,7 +362,7 @@ namespace MiTiendaSOAP
                         cmdDetalle.Parameters.AddWithValue("@price", precio);
                         cmdDetalle.ExecuteNonQuery();
 
-                        // 4. Actualizar Stock
+                        // 4. Actualizar Stock (GestionarInventario integrado)
                         string queryStock = "UPDATE Productos SET Stock = Stock - @cant WHERE ProductoID = @prodId";
                         MySqlCommand cmdStock = new MySqlCommand(queryStock, conn, trans);
                         cmdStock.Parameters.AddWithValue("@cant", cant);
@@ -383,7 +382,7 @@ namespace MiTiendaSOAP
             }
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Obtiene los pedidos realizados por un usuario.")]
         public List<string> ObtenerPedidosPorUsuario(int usuarioID)
         {
             List<string> pedidos = new List<string>();
@@ -413,7 +412,7 @@ namespace MiTiendaSOAP
             return pedidos;
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Actualiza el estado de un pedido (Ej: Enviado, Entregado).")]
         public string ActualizarEstadoPedido(int pedidoID, string nuevoEstado)
         {
             using (MySqlConnection conn = new MySqlConnection(connString))
@@ -438,7 +437,7 @@ namespace MiTiendaSOAP
             }
         }
 
-        [WebMethod]
+        [WebMethod(Description = "Recupera el historial detallado de compras de un usuario.")]
         public List<string> HistorialCompras(int usuarioID)
         {
             List<string> historial = new List<string>();
@@ -474,9 +473,43 @@ namespace MiTiendaSOAP
 
         #endregion
 
-        #region Logs
+        #region Reportes y Logs
 
-        [WebMethod]
+        [WebMethod(Description = "Genera un reporte total de ventas e ingresos.")]
+        public string ReporteVentas()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connString))
+            {
+                try
+                {
+                    conn.Open();
+                    string query = @"SELECT COUNT(DISTINCT p.PedidoID) as TotalPedidos, 
+                                            IFNULL(SUM(dp.Cantidad * dp.PrecioUnitario), 0) as IngresosTotales
+                                     FROM Pedidos p
+                                     JOIN DetallePedidos dp ON p.PedidoID = dp.PedidoID
+                                     WHERE p.Estado != 'Cancelado'";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return $"Reporte de Ventas: {reader["TotalPedidos"]} pedidos realizados. Ingresos Totales: ${reader["IngresosTotales"]}";
+                            }
+                        }
+                    }
+                    return "No hay datos de ventas disponibles.";
+                }
+                catch (Exception ex)
+                {
+                    RegistrarLogError("ReporteVentas", ex.Message);
+                    return "Error al generar el reporte.";
+                }
+            }
+        }
+
+        [WebMethod(Description = "Registra errores internos en la base de datos.")]
         public void RegistrarLogError(string evento, string mensaje)
         {
             using (MySqlConnection conn = new MySqlConnection(connString))
@@ -491,7 +524,7 @@ namespace MiTiendaSOAP
                         cmd.ExecuteNonQuery();
                     }
                 }
-                catch { /* Silent fail to avoid recursion */ }
+                catch { /* Silent fail para evitar bucles infinitos de error */ }
             }
         }
 
